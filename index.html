@@ -29,6 +29,31 @@ body {
     max-width: 360px;
 }
 
+/* 💖 Animated YES message */
+#message {
+    margin-bottom: 15px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #e91e63;
+    display: none;
+    text-align: center;
+}
+
+@keyframes waveIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.9);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(10px) scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 h1 {
     color: #e91e63;
     margin-bottom: 25px;
@@ -40,9 +65,8 @@ h1 {
     position: relative;
     display: flex;
     justify-content: center;
-    gap: 25px; /* ✅ SPACE between Yes & No */
+    gap: 25px;
 }
-
 
 button {
     padding: 14px 28px;
@@ -68,7 +92,7 @@ button {
     color: white;
 }
 
-/* Speech bubble */
+/* 💬 Speech bubble */
 .bubble {
     position: absolute;
     background: #fff2c6;
@@ -76,21 +100,14 @@ button {
     padding: 10px 14px;
     border-radius: 15px;
     font-size: 13px;
-
-    /* 🔥 FIXES */
     max-width: 200px;
-    width: max-content;
     min-width: 140px;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
     text-align: center;
-
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    word-wrap: break-word;
     display: none;
     z-index: 3;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
-
 
 .bubble::after {
     content: "";
@@ -103,18 +120,9 @@ button {
     border-color: #fff2c6 transparent transparent transparent;
 }
 
-/* YES message */
-#message {
-    margin-top: 25px;
-    font-size: 20px;
-    color: #e91e63;
-    display: none;
-}
-
-/* Floating hearts */
+/* ❤️ Floating hearts */
 .heart {
     position: absolute;
-    color: red;
     font-size: 22px;
     animation: floatUp 5s linear infinite;
     opacity: 0.7;
@@ -125,7 +133,7 @@ button {
     100% { transform: translateY(-10vh); opacity: 0; }
 }
 
-/* Confetti */
+/* 🎊 Confetti */
 .confetti {
     position: fixed;
     width: 10px;
@@ -140,12 +148,24 @@ button {
         opacity: 0;
     }
 }
+
+/* 📱 Mobile tweak */
+@media (max-width: 480px) {
+    #message { font-size: 20px; }
+}
 </style>
 </head>
 
 <body>
 
 <div class="card">
+
+    <!-- 💖 YES MESSAGE (above question) -->
+    <div id="message">
+        Yayyy Varsh 🥰💖<br>
+        You just made my heart smile 💕
+    </div>
+
     <h1>Varsh 💖<br>Will you be my Bestie For Ever?</h1>
 
     <div class="buttons">
@@ -155,11 +175,6 @@ button {
             <div class="bubble" id="bubble"></div>
             <button id="noBtn">No 🙈</button>
         </div>
-    </div>
-
-    <div id="message">
-        Yayyy Varsh 🥰💖  
-        You just made my heart smile 💕
     </div>
 </div>
 
@@ -181,20 +196,12 @@ const messages = [
 
 let msgIndex = 0;
 
-/* Rectangle overlap check */
 function overlaps(a, b) {
-    return !(
-        a.right < b.left ||
-        a.left > b.right ||
-        a.bottom < b.top ||
-        a.top > b.bottom
-    );
+    return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
 }
 
-/* NO button click */
+/* NO button logic */
 noContainer.addEventListener("click", () => {
-
-    /* Bubble message */
     bubble.textContent = messages[msgIndex];
     bubble.style.display = "block";
     msgIndex = (msgIndex + 1) % messages.length;
@@ -203,19 +210,12 @@ noContainer.addEventListener("click", () => {
     const yesRect = yesBtn.getBoundingClientRect();
     const btnRect = noContainer.getBoundingClientRect();
 
-    const EDGE = 15;
-    const BUBBLE_SPACE = 70;
-
     let x, y, safe = false, tries = 0;
 
     while (!safe && tries < 80) {
         tries++;
-
-        const maxX = cardRect.width - btnRect.width - EDGE;
-        const maxY = cardRect.height - btnRect.height - EDGE;
-
-        x = Math.random() * maxX;
-        y = Math.random() * maxY;
+        x = Math.random() * (cardRect.width - btnRect.width - 20);
+        y = Math.random() * (cardRect.height - btnRect.height - 20);
 
         const testRect = {
             left: cardRect.left + x,
@@ -224,65 +224,30 @@ noContainer.addEventListener("click", () => {
             bottom: cardRect.top + y + btnRect.height
         };
 
-        if (!overlaps(testRect, yesRect)) {
-            safe = true;
-        }
+        if (!overlaps(testRect, yesRect)) safe = true;
     }
 
-    /* Position inside card */
     noContainer.style.left = x + "px";
     noContainer.style.top = y + "px";
-
-    /* ----- Smart bubble placement ----- */
-    bubble.style.top = "";
-    bubble.style.bottom = "";
-    bubble.style.left = "";
-    bubble.style.right = "";
-    bubble.style.transform = "";
-
-    const spaceTop = y;
-    const spaceBottom = cardRect.height - (y + btnRect.height);
-    const spaceLeft = x;
-    const spaceRight = cardRect.width - (x + btnRect.width);
-
-    if (spaceTop > BUBBLE_SPACE) {
-        bubble.style.bottom = btnRect.height + 8 + "px";
-        bubble.style.left = "50%";
-        bubble.style.transform = "translateX(-50%)";
-    } else if (spaceBottom > BUBBLE_SPACE) {
-        bubble.style.top = btnRect.height + 8 + "px";
-        bubble.style.left = "50%";
-        bubble.style.transform = "translateX(-50%)";
-    } else if (spaceRight > 140) {
-        bubble.style.left = btnRect.width + 8 + "px";
-        bubble.style.top = "50%";
-        bubble.style.transform = "translateY(-50%)";
-    } else {
-        bubble.style.right = btnRect.width + 8 + "px";
-        bubble.style.top = "50%";
-        bubble.style.transform = "translateY(-50%)";
-    }
 });
 
-/* Floating hearts */
-function createHeart() {
+/* ❤️ Hearts */
+setInterval(() => {
     const heart = document.createElement("div");
     heart.className = "heart";
     heart.innerHTML = "❤️";
     heart.style.left = Math.random() * 100 + "vw";
     document.body.appendChild(heart);
     setTimeout(() => heart.remove(), 5000);
-}
-setInterval(createHeart, 450);
+}, 450);
 
-/* Confetti */
+/* 🎊 Confetti */
 function confettiBlast() {
     for (let i = 0; i < 120; i++) {
         const c = document.createElement("div");
         c.className = "confetti";
         c.style.left = Math.random() * 100 + "vw";
-        c.style.backgroundColor =
-            `hsl(${Math.random() * 360},100%,50%)`;
+        c.style.backgroundColor = `hsl(${Math.random()*360},100%,50%)`;
         document.body.appendChild(c);
         setTimeout(() => c.remove(), 4000);
     }
@@ -291,12 +256,12 @@ function confettiBlast() {
 /* YES click */
 yesBtn.addEventListener("click", () => {
     message.style.display = "block";
+    message.style.animation = "none";
+    message.offsetHeight;
+    message.style.animation = "waveIn 1.2s ease-out forwards";
     confettiBlast();
-    
 });
 </script>
 
-
 </body>
 </html>
-
