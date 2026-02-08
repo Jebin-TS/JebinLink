@@ -67,18 +67,26 @@ button {
 /* Speech bubble */
 .bubble {
     position: absolute;
-    bottom: 55px;
-    left: 50%;
-    transform: translateX(-50%);
     background: #fff2c6;
     color: #444;
     padding: 10px 14px;
     border-radius: 15px;
     font-size: 13px;
-    min-width: 160px;
+
+    /* 🔥 FIXES */
+    max-width: 200px;
+    width: max-content;
+    min-width: 140px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    text-align: center;
+
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     display: none;
+    z-index: 3;
 }
+
 
 .bubble::after {
     content: "";
