@@ -13,7 +13,7 @@ body {
     justify-content: center;
     align-items: center;
     background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 .card {
@@ -24,15 +24,16 @@ body {
     box-shadow: 0 15px 30px rgba(0,0,0,0.25);
     position: relative;
     z-index: 2;
+    width: 340px;
 }
 
 h1 {
     color: #e91e63;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 button {
-    padding: 14px 30px;
+    padding: 14px 28px;
     font-size: 18px;
     border: none;
     border-radius: 30px;
@@ -42,20 +43,28 @@ button {
 #yesBtn {
     background: #4CAF50;
     color: white;
-    margin-right: 20px;
+    margin-right: 10px;
 }
 
 #noBtn {
     background: #f44336;
     color: white;
-    position: absolute;
 }
 
 #message {
-    margin-top: 25px;
+    margin-top: 20px;
     font-size: 22px;
     color: #e91e63;
     display: none;
+}
+
+/* Funny quote box */
+#quoteBox {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #555;
+    min-height: 30px;
+    font-style: italic;
 }
 
 /* Floating hearts */
@@ -83,7 +92,6 @@ button {
     position: fixed;
     width: 10px;
     height: 10px;
-    background: red;
     top: 0;
     animation: fall 3s linear forwards;
 }
@@ -103,7 +111,9 @@ button {
     <h1>Varsh 💖<br>Will you be my Valentine?</h1>
 
     <button id="yesBtn">Yes 💕</button>
-    <button id="noBtn">No 💔</button>
+    <button id="noBtn">No 🙈</button>
+
+    <div id="quoteBox"></div>
 
     <div id="message">
         Yayyy Varsh 🥰💖  
@@ -112,19 +122,31 @@ button {
 </div>
 
 <script>
-const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
 const message = document.getElementById("message");
+const quoteBox = document.getElementById("quoteBox");
 
-/* NO button逃跑 😆 */
-noBtn.addEventListener("mouseover", () => {
-    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
+/* Funny NO-click quotes */
+const quotes = [
+    "Are you sure? My heart just tripped 😅",
+    "That NO looks suspiciously cute 🤭",
+    "Plot twist: NO actually means YES 😌",
+    "My heart says try again 💖",
+    "Even Google says we’re a match 😉",
+    "That button is lying 😏",
+    "Love loading… please retry 💕"
+];
+
+let quoteIndex = 0;
+
+/* NO button click → show funny quote */
+noBtn.addEventListener("click", () => {
+    quoteBox.textContent = quotes[quoteIndex];
+    quoteIndex = (quoteIndex + 1) % quotes.length;
 });
 
-/* Floating hearts generator */
+/* Floating hearts */
 function createHeart() {
     const heart = document.createElement("div");
     heart.classList.add("heart");
@@ -157,7 +179,6 @@ yesBtn.addEventListener("click", () => {
     message.style.display = "block";
     confettiBlast();
 
-    // WhatsApp auto message
     setTimeout(() => {
         window.location.href =
         "https://wa.me/?text=Yes%20🥰💖%20I%20will%20be%20your%20Valentine!";
