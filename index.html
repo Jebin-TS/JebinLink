@@ -100,14 +100,19 @@ button {
     padding: 10px 14px;
     border-radius: 15px;
     font-size: 13px;
+
     max-width: 200px;
     min-width: 140px;
     text-align: center;
     word-wrap: break-word;
+
     display: none;
     z-index: 3;
+
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    pointer-events: none; /* 🔥 prevents blocking the button */
 }
+
 
 .bubble::after {
     content: "";
@@ -192,8 +197,6 @@ const messages = [
      "Ur Laugh, Kil me 💖",
     "Again No,Will Bite your Nose 😉",
     "Heart says YES 💖",
-    "This button is shy 🙈",
-    "Destiny agrees 😌"
 ];
 
 let msgIndex = 0;
@@ -267,4 +270,5 @@ yesBtn.addEventListener("click", () => {
 
 </body>
 </html>
+
 
