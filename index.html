@@ -40,18 +40,9 @@ body {
 }
 
 @keyframes waveIn {
-    0% {
-        opacity: 0;
-        transform: translateY(-30px) scale(0.9);
-    }
-    50% {
-        opacity: 1;
-        transform: translateY(10px) scale(1.05);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+    0% { opacity: 0; transform: translateY(-30px) scale(0.9); }
+    50% { opacity: 1; transform: translateY(10px) scale(1.05); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 h1 {
@@ -92,7 +83,7 @@ button {
     color: white;
 }
 
-/* 💬 Speech bubble */
+/* 💬 Bubble */
 .bubble {
     position: absolute;
     background: #fff2c6;
@@ -100,19 +91,15 @@ button {
     padding: 10px 14px;
     border-radius: 15px;
     font-size: 13px;
-
     max-width: 200px;
     min-width: 140px;
     text-align: center;
     word-wrap: break-word;
-
     display: none;
     z-index: 3;
-
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    pointer-events: none; /* 🔥 prevents blocking the button */
+    pointer-events: none;
 }
-
 
 .bubble::after {
     content: "";
@@ -125,7 +112,7 @@ button {
     border-color: #fff2c6 transparent transparent transparent;
 }
 
-/* ❤️ Floating hearts */
+/* ❤️ Hearts */
 .heart {
     position: absolute;
     font-size: 22px;
@@ -148,15 +135,7 @@ button {
 }
 
 @keyframes fall {
-    to {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
-    }
-}
-
-/* 📱 Mobile tweak */
-@media (max-width: 480px) {
-    #message { font-size: 20px; }
+    to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
 }
 </style>
 </head>
@@ -165,7 +144,6 @@ button {
 
 <div class="card">
 
-    <!-- 💖 YES MESSAGE (above question) -->
     <div id="message">
         Yayyy Varsh 🥰💖<br>
         You just made my heart smile 💕
@@ -191,71 +169,83 @@ const message = document.getElementById("message");
 const card = document.querySelector(".card");
 
 const messages = [
-    "I see you through Monitors😆",
+    "I see you through monitors 😆",
     "Missed me, Capsicum 😜",
     "പാവം jebin 🙈",
-     "Ur Laugh, Kil me 💖",
-    "Again No,Will Bite your Nose 😉",
-    "Heart says YES 💖",
+    "Ur laugh kills me 💖",
+    "Again NO? I’ll bite your nose 😉",
+    "Heart says YES 💕"
 ];
 
 let msgIndex = 0;
 
-function overlaps(a, b) {
-    return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
-}
-
-/* NO button logic */
+/* NO button click */
 noContainer.addEventListener("click", () => {
-    /* ----- SAFE bubble placement (never overlap button) ----- */
-bubble.style.top = "";
-bubble.style.bottom = "";
-bubble.style.left = "";
-bubble.style.right = "";
-bubble.style.transform = "";
 
-const GAP = 12; // minimum gap between bubble & button
+    // Bubble text
+    bubble.textContent = messages[msgIndex];
+    bubble.style.display = "block";
+    msgIndex = (msgIndex + 1) % messages.length;
 
-const spaceTop = y;
-const spaceBottom = cardRect.height - (y + btnRect.height);
-const spaceLeft = x;
-const spaceRight = cardRect.width - (x + btnRect.width);
+    const cardRect = card.getBoundingClientRect();
+    const btnRect = noContainer.getBoundingClientRect();
 
-/* Priority order: TOP → BOTTOM → RIGHT → LEFT */
-if (spaceTop > 80) {
-    bubble.style.bottom = btnRect.height + GAP + "px";
-    bubble.style.left = "50%";
-    bubble.style.transform = "translateX(-50%)";
-}
-else if (spaceBottom > 80) {
-    bubble.style.top = btnRect.height + GAP + "px";
-    bubble.style.left = "50%";
-    bubble.style.transform = "translateX(-50%)";
-}
-else if (spaceRight > 160) {
-    bubble.style.left = btnRect.width + GAP + "px";
-    bubble.style.top = "50%";
-    bubble.style.transform = "translateY(-50%)";
-}
-else {
-    bubble.style.right = btnRect.width + GAP + "px";
-    bubble.style.top = "50%";
-    bubble.style.transform = "translateY(-50%)";
-}
+    const EDGE = 15;
+    let x, y, safe = false, tries = 0;
 
+    while (!safe && tries < 80) {
+        tries++;
+        x = Math.random() * (cardRect.width - btnRect.width - EDGE);
+        y = Math.random() * (cardRect.height - btnRect.height - EDGE);
+
+        safe = true;
+    }
+
+    noContainer.style.left = x + "px";
+    noContainer.style.top = y + "px";
+
+    /* SAFE bubble placement */
+    bubble.style.top = "";
+    bubble.style.bottom = "";
+    bubble.style.left = "";
+    bubble.style.right = "";
+    bubble.style.transform = "";
+
+    const GAP = 12;
+    const spaceTop = y;
+    const spaceBottom = cardRect.height - (y + btnRect.height);
+    const spaceRight = cardRect.width - (x + btnRect.width);
+
+    if (spaceTop > 80) {
+        bubble.style.bottom = btnRect.height + GAP + "px";
+        bubble.style.left = "50%";
+        bubble.style.transform = "translateX(-50%)";
+    } else if (spaceBottom > 80) {
+        bubble.style.top = btnRect.height + GAP + "px";
+        bubble.style.left = "50%";
+        bubble.style.transform = "translateX(-50%)";
+    } else if (spaceRight > 160) {
+        bubble.style.left = btnRect.width + GAP + "px";
+        bubble.style.top = "50%";
+        bubble.style.transform = "translateY(-50%)";
+    } else {
+        bubble.style.right = btnRect.width + GAP + "px";
+        bubble.style.top = "50%";
+        bubble.style.transform = "translateY(-50%)";
+    }
 });
 
-/* ❤️ Hearts */
+/* Hearts */
 setInterval(() => {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.innerHTML = "❤️";
-    heart.style.left = Math.random() * 100 + "vw";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 5000);
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.innerHTML = "❤️";
+    h.style.left = Math.random() * 100 + "vw";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 5000);
 }, 450);
 
-/* 🎊 Confetti */
+/* Confetti */
 function confettiBlast() {
     for (let i = 0; i < 120; i++) {
         const c = document.createElement("div");
@@ -279,6 +269,3 @@ yesBtn.addEventListener("click", () => {
 
 </body>
 </html>
-
-
-
