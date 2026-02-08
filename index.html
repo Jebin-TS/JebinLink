@@ -207,33 +207,42 @@ function overlaps(a, b) {
 
 /* NO button logic */
 noContainer.addEventListener("click", () => {
-    bubble.textContent = messages[msgIndex];
-    bubble.style.display = "block";
-    msgIndex = (msgIndex + 1) % messages.length;
+    /* ----- SAFE bubble placement (never overlap button) ----- */
+bubble.style.top = "";
+bubble.style.bottom = "";
+bubble.style.left = "";
+bubble.style.right = "";
+bubble.style.transform = "";
 
-    const cardRect = card.getBoundingClientRect();
-    const yesRect = yesBtn.getBoundingClientRect();
-    const btnRect = noContainer.getBoundingClientRect();
+const GAP = 12; // minimum gap between bubble & button
 
-    let x, y, safe = false, tries = 0;
+const spaceTop = y;
+const spaceBottom = cardRect.height - (y + btnRect.height);
+const spaceLeft = x;
+const spaceRight = cardRect.width - (x + btnRect.width);
 
-    while (!safe && tries < 80) {
-        tries++;
-        x = Math.random() * (cardRect.width - btnRect.width - 20);
-        y = Math.random() * (cardRect.height - btnRect.height - 20);
+/* Priority order: TOP → BOTTOM → RIGHT → LEFT */
+if (spaceTop > 80) {
+    bubble.style.bottom = btnRect.height + GAP + "px";
+    bubble.style.left = "50%";
+    bubble.style.transform = "translateX(-50%)";
+}
+else if (spaceBottom > 80) {
+    bubble.style.top = btnRect.height + GAP + "px";
+    bubble.style.left = "50%";
+    bubble.style.transform = "translateX(-50%)";
+}
+else if (spaceRight > 160) {
+    bubble.style.left = btnRect.width + GAP + "px";
+    bubble.style.top = "50%";
+    bubble.style.transform = "translateY(-50%)";
+}
+else {
+    bubble.style.right = btnRect.width + GAP + "px";
+    bubble.style.top = "50%";
+    bubble.style.transform = "translateY(-50%)";
+}
 
-        const testRect = {
-            left: cardRect.left + x,
-            right: cardRect.left + x + btnRect.width,
-            top: cardRect.top + y,
-            bottom: cardRect.top + y + btnRect.height
-        };
-
-        if (!overlaps(testRect, yesRect)) safe = true;
-    }
-
-    noContainer.style.left = x + "px";
-    noContainer.style.top = y + "px";
 });
 
 /* ❤️ Hearts */
@@ -270,5 +279,6 @@ yesBtn.addEventListener("click", () => {
 
 </body>
 </html>
+
 
 
