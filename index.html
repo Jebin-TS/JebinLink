@@ -150,7 +150,6 @@ button {
         You just made my heart smile 💕
     </div>
 </div>
-
 <script>
 const noContainer = document.getElementById("noContainer");
 const bubble = document.getElementById("bubble");
@@ -170,7 +169,7 @@ const messages = [
 
 let msgIndex = 0;
 
-/* Utility: check overlap */
+/* Rectangle overlap check */
 function overlaps(a, b) {
     return !(
         a.right < b.left ||
@@ -180,24 +179,40 @@ function overlaps(a, b) {
     );
 }
 
-/* NO click */
+/* Clamp helper */
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
+
+/* NO click logic */
 noContainer.addEventListener("click", () => {
-    // Set bubble text
+
+    /* Bubble text */
     bubble.textContent = messages[msgIndex];
     bubble.style.display = "block";
     msgIndex = (msgIndex + 1) % messages.length;
 
-    const padding = 15;
+    const EDGE_MARGIN = 20;      // keeps button inside window
+    const BUBBLE_SPACE = 70;     // reserve space for bubble
+
     const btnRect = noContainer.getBoundingClientRect();
     const yesRect = yesBtn.getBoundingClientRect();
     const cardRect = card.getBoundingClientRect();
 
-    let x, y, safe = false;
+    let x, y, safe = false, tries = 0;
 
-    // Find safe random position
-    while (!safe) {
-        x = Math.random() * (window.innerWidth - btnRect.width - padding * 2) + padding;
-        y = Math.random() * (window.innerHeight - btnRect.height - padding * 2) + padding;
+    while (!safe && tries < 100) {
+        tries++;
+
+        const maxX = window.innerWidth - btnRect.width - EDGE_MARGIN;
+        const maxY = window.innerHeight - btnRect.height - EDGE_MARGIN;
+
+        x = Math.random() * (maxX - EDGE_MARGIN) + EDGE_MARGIN;
+        y = Math.random() * (maxY - EDGE_MARGIN) + EDGE_MARGIN;
+
+        /* Clamp again for safety */
+        x = clamp(x, EDGE_MARGIN, maxX);
+        y = clamp(y, EDGE_MARGIN, maxY);
 
         const testRect = {
             left: x,
@@ -217,11 +232,10 @@ noContainer.addEventListener("click", () => {
     noContainer.style.left = x + "px";
     noContainer.style.top = y + "px";
 
-    /* Bubble positioning logic */
-    const bubblePadding = 10;
-    bubble.style.left = "50%";
+    /* ---- Smart bubble placement ---- */
     bubble.style.top = "";
     bubble.style.bottom = "";
+    bubble.style.left = "";
     bubble.style.right = "";
     bubble.style.transform = "";
 
@@ -230,20 +244,20 @@ noContainer.addEventListener("click", () => {
     const spaceLeft = x;
     const spaceRight = window.innerWidth - (x + btnRect.width);
 
-    if (spaceTop > 60) {
-        bubble.style.bottom = btnRect.height + bubblePadding + "px";
+    if (spaceTop > BUBBLE_SPACE) {
+        bubble.style.bottom = btnRect.height + 10 + "px";
         bubble.style.left = "50%";
         bubble.style.transform = "translateX(-50%)";
-    } else if (spaceBottom > 60) {
-        bubble.style.top = btnRect.height + bubblePadding + "px";
+    } else if (spaceBottom > BUBBLE_SPACE) {
+        bubble.style.top = btnRect.height + 10 + "px";
         bubble.style.left = "50%";
         bubble.style.transform = "translateX(-50%)";
-    } else if (spaceRight > 120) {
-        bubble.style.left = btnRect.width + bubblePadding + "px";
+    } else if (spaceRight > 140) {
+        bubble.style.left = btnRect.width + 10 + "px";
         bubble.style.top = "50%";
         bubble.style.transform = "translateY(-50%)";
     } else {
-        bubble.style.right = btnRect.width + bubblePadding + "px";
+        bubble.style.right = btnRect.width + 10 + "px";
         bubble.style.top = "50%";
         bubble.style.transform = "translateY(-50%)";
     }
@@ -283,6 +297,7 @@ yesBtn.addEventListener("click", () => {
     }, 1500);
 });
 </script>
+
 
 </body>
 </html>
