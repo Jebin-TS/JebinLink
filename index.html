@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For Varsh 💖</title>
+<title>For My Dear Varsh 💖</title>
 
 <style>
 body {
@@ -134,7 +134,7 @@ button {
 <body>
 
 <div class="card">
-    <h1>Varsh 💖<br>Will you be my Valentine?</h1>
+    <h1>Varsh 💖<br>Will you be my Bestie For Ever?</h1>
 
     <div class="buttons">
         <button id="yesBtn">Yes 💕</button>
@@ -156,30 +156,97 @@ const noContainer = document.getElementById("noContainer");
 const bubble = document.getElementById("bubble");
 const yesBtn = document.getElementById("yesBtn");
 const message = document.getElementById("message");
+const card = document.querySelector(".card");
 
-/* Funny bubble messages */
+/* Messages */
 const messages = [
     "Hey! That tickles 😆",
-    "Oops… missed me 😜",
-    "Are you playing hard to get? 😉",
-    "My heart says try again 💖",
+    "Missed me 😜",
+    "Playing hard to get? 😉",
+    "Heart says YES 💖",
     "This button is shy 🙈",
-    "Destiny says YES 😌"
+    "Destiny agrees 😌"
 ];
 
 let msgIndex = 0;
 
-/* NO click → move + show bubble */
+/* Utility: check overlap */
+function overlaps(a, b) {
+    return !(
+        a.right < b.left ||
+        a.left > b.right ||
+        a.bottom < b.top ||
+        a.top > b.bottom
+    );
+}
+
+/* NO click */
 noContainer.addEventListener("click", () => {
+    // Set bubble text
     bubble.textContent = messages[msgIndex];
     bubble.style.display = "block";
     msgIndex = (msgIndex + 1) % messages.length;
 
-    const x = Math.random() * (window.innerWidth - 200);
-    const y = Math.random() * (window.innerHeight - 200);
+    const padding = 15;
+    const btnRect = noContainer.getBoundingClientRect();
+    const yesRect = yesBtn.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+
+    let x, y, safe = false;
+
+    // Find safe random position
+    while (!safe) {
+        x = Math.random() * (window.innerWidth - btnRect.width - padding * 2) + padding;
+        y = Math.random() * (window.innerHeight - btnRect.height - padding * 2) + padding;
+
+        const testRect = {
+            left: x,
+            right: x + btnRect.width,
+            top: y,
+            bottom: y + btnRect.height
+        };
+
+        if (
+            !overlaps(testRect, yesRect) &&
+            !overlaps(testRect, cardRect)
+        ) {
+            safe = true;
+        }
+    }
 
     noContainer.style.left = x + "px";
     noContainer.style.top = y + "px";
+
+    /* Bubble positioning logic */
+    const bubblePadding = 10;
+    bubble.style.left = "50%";
+    bubble.style.top = "";
+    bubble.style.bottom = "";
+    bubble.style.right = "";
+    bubble.style.transform = "";
+
+    const spaceTop = y;
+    const spaceBottom = window.innerHeight - (y + btnRect.height);
+    const spaceLeft = x;
+    const spaceRight = window.innerWidth - (x + btnRect.width);
+
+    if (spaceTop > 60) {
+        bubble.style.bottom = btnRect.height + bubblePadding + "px";
+        bubble.style.left = "50%";
+        bubble.style.transform = "translateX(-50%)";
+    } else if (spaceBottom > 60) {
+        bubble.style.top = btnRect.height + bubblePadding + "px";
+        bubble.style.left = "50%";
+        bubble.style.transform = "translateX(-50%)";
+    } else if (spaceRight > 120) {
+        bubble.style.left = btnRect.width + bubblePadding + "px";
+        bubble.style.top = "50%";
+        bubble.style.transform = "translateY(-50%)";
+    } else {
+        bubble.style.right = btnRect.width + bubblePadding + "px";
+        bubble.style.top = "50%";
+        bubble.style.transform = "translateY(-50%)";
+    }
 });
 
 /* Floating hearts */
@@ -199,7 +266,8 @@ function confettiBlast() {
         const c = document.createElement("div");
         c.classList.add("confetti");
         c.style.left = Math.random() * 100 + "vw";
-        c.style.backgroundColor = `hsl(${Math.random()*360},100%,50%)`;
+        c.style.backgroundColor =
+            `hsl(${Math.random() * 360},100%,50%)`;
         document.body.appendChild(c);
         setTimeout(() => c.remove(), 4000);
     }
@@ -209,7 +277,6 @@ function confettiBlast() {
 yesBtn.addEventListener("click", () => {
     message.style.display = "block";
     confettiBlast();
-
     setTimeout(() => {
         window.location.href =
         "https://wa.me/?text=Yes%20🥰💖%20I%20will%20be%20your%20Valentine!";
@@ -219,3 +286,4 @@ yesBtn.addEventListener("click", () => {
 
 </body>
 </html>
+
