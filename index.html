@@ -150,6 +150,7 @@ button {
         You just made my heart smile 💕
     </div>
 </div>
+
 <script>
 const noContainer = document.getElementById("noContainer");
 const bubble = document.getElementById("bubble");
@@ -157,7 +158,6 @@ const yesBtn = document.getElementById("yesBtn");
 const message = document.getElementById("message");
 const card = document.querySelector(".card");
 
-/* Messages */
 const messages = [
     "Hey! That tickles 😆",
     "Missed me 😜",
@@ -179,60 +179,49 @@ function overlaps(a, b) {
     );
 }
 
-/* Clamp helper */
-function clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max);
-}
-
-/* NO click logic */
+/* NO button click */
 noContainer.addEventListener("click", () => {
 
-    /* Bubble text */
+    /* Bubble message */
     bubble.textContent = messages[msgIndex];
     bubble.style.display = "block";
     msgIndex = (msgIndex + 1) % messages.length;
 
-    const EDGE_MARGIN = 20;      // keeps button inside window
-    const BUBBLE_SPACE = 70;     // reserve space for bubble
-
-    const btnRect = noContainer.getBoundingClientRect();
-    const yesRect = yesBtn.getBoundingClientRect();
     const cardRect = card.getBoundingClientRect();
+    const yesRect = yesBtn.getBoundingClientRect();
+    const btnRect = noContainer.getBoundingClientRect();
+
+    const EDGE = 15;
+    const BUBBLE_SPACE = 70;
 
     let x, y, safe = false, tries = 0;
 
-    while (!safe && tries < 100) {
+    while (!safe && tries < 80) {
         tries++;
 
-        const maxX = window.innerWidth - btnRect.width - EDGE_MARGIN;
-        const maxY = window.innerHeight - btnRect.height - EDGE_MARGIN;
+        const maxX = cardRect.width - btnRect.width - EDGE;
+        const maxY = cardRect.height - btnRect.height - EDGE;
 
-        x = Math.random() * (maxX - EDGE_MARGIN) + EDGE_MARGIN;
-        y = Math.random() * (maxY - EDGE_MARGIN) + EDGE_MARGIN;
-
-        /* Clamp again for safety */
-        x = clamp(x, EDGE_MARGIN, maxX);
-        y = clamp(y, EDGE_MARGIN, maxY);
+        x = Math.random() * maxX;
+        y = Math.random() * maxY;
 
         const testRect = {
-            left: x,
-            right: x + btnRect.width,
-            top: y,
-            bottom: y + btnRect.height
+            left: cardRect.left + x,
+            right: cardRect.left + x + btnRect.width,
+            top: cardRect.top + y,
+            bottom: cardRect.top + y + btnRect.height
         };
 
-        if (
-            !overlaps(testRect, yesRect) &&
-            !overlaps(testRect, cardRect)
-        ) {
+        if (!overlaps(testRect, yesRect)) {
             safe = true;
         }
     }
 
+    /* Position inside card */
     noContainer.style.left = x + "px";
     noContainer.style.top = y + "px";
 
-    /* ---- Smart bubble placement ---- */
+    /* ----- Smart bubble placement ----- */
     bubble.style.top = "";
     bubble.style.bottom = "";
     bubble.style.left = "";
@@ -240,24 +229,24 @@ noContainer.addEventListener("click", () => {
     bubble.style.transform = "";
 
     const spaceTop = y;
-    const spaceBottom = window.innerHeight - (y + btnRect.height);
+    const spaceBottom = cardRect.height - (y + btnRect.height);
     const spaceLeft = x;
-    const spaceRight = window.innerWidth - (x + btnRect.width);
+    const spaceRight = cardRect.width - (x + btnRect.width);
 
     if (spaceTop > BUBBLE_SPACE) {
-        bubble.style.bottom = btnRect.height + 10 + "px";
+        bubble.style.bottom = btnRect.height + 8 + "px";
         bubble.style.left = "50%";
         bubble.style.transform = "translateX(-50%)";
     } else if (spaceBottom > BUBBLE_SPACE) {
-        bubble.style.top = btnRect.height + 10 + "px";
+        bubble.style.top = btnRect.height + 8 + "px";
         bubble.style.left = "50%";
         bubble.style.transform = "translateX(-50%)";
     } else if (spaceRight > 140) {
-        bubble.style.left = btnRect.width + 10 + "px";
+        bubble.style.left = btnRect.width + 8 + "px";
         bubble.style.top = "50%";
         bubble.style.transform = "translateY(-50%)";
     } else {
-        bubble.style.right = btnRect.width + 10 + "px";
+        bubble.style.right = btnRect.width + 8 + "px";
         bubble.style.top = "50%";
         bubble.style.transform = "translateY(-50%)";
     }
@@ -266,7 +255,7 @@ noContainer.addEventListener("click", () => {
 /* Floating hearts */
 function createHeart() {
     const heart = document.createElement("div");
-    heart.classList.add("heart");
+    heart.className = "heart";
     heart.innerHTML = "❤️";
     heart.style.left = Math.random() * 100 + "vw";
     document.body.appendChild(heart);
@@ -278,7 +267,7 @@ setInterval(createHeart, 450);
 function confettiBlast() {
     for (let i = 0; i < 120; i++) {
         const c = document.createElement("div");
-        c.classList.add("confetti");
+        c.className = "confetti";
         c.style.left = Math.random() * 100 + "vw";
         c.style.backgroundColor =
             `hsl(${Math.random() * 360},100%,50%)`;
@@ -293,7 +282,7 @@ yesBtn.addEventListener("click", () => {
     confettiBlast();
     setTimeout(() => {
         window.location.href =
-        "https://wa.me/?text=Yes%20🥰💖%20I%20will%20be%20your%20Valentine!";
+        "https://wa.me/?text=Yes%20🥰💖%20I%20will%20be%20your%20Bestie%20Forever!";
     }, 1500);
 });
 </script>
